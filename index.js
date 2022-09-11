@@ -27,7 +27,8 @@ function chooseAction() {
             "View All Roles",
             "Add Role",
             "View All Departments",
-            "Add Department"
+            "Add Department",
+            "Quit"
         ]
     })
         .then(({ action }) => {
@@ -45,35 +46,89 @@ function chooseAction() {
                 viewDeps();
             } else if (action === "Add Department") {
                 addDep();
+            } else if (action === "Quit") {
+                quit();
             }
     })
 }
 function viewAllEmps() {
-    console.log("reached 1")
-    chooseAction();
+    db.query(
+      `SELECT 
+        employee.id, 
+        employee.first_name, 
+        employee.last_name
+      FROM employee
+      LEFT JOIN roles ON employee.role_id = roles.id
+    `,
+      (err, rows) => {
+        console.table(rows);
+        chooseAction();
+      }
+    );
 }
 function addEmployee() {
-    console.log("reached 2");
+
     chooseAction();
 }
 function updateEmployee(){
-    console.log("reached 3");
+
     chooseAction();
 }
 function viewAllRoles() {
-    console.log("reached 4");
-    chooseAction();
+    db.query(
+      `SELECT roles.id, roles.title, roles.salary, department.name AS department
+      FROM roles
+      LEFT JOIN department ON roles.department_id = department.id 
+      
+    `,
+      (err, rows) => {
+        console.table(rows);
+        chooseAction();
+      }
+    );
 }
 function addRole() {
-    console.log("reached 5");
-    chooseAction();
+    inquirer.prompt(
+        {
+            type: "text",
+            name: "name",
+            message: "What is the name of the role?"
+        },
+        {
+            type: "text",
+            name: "salary",
+            message: "What is the salary of the role?"
+        },
+        {
+            type: "list",
+            name: "department",
+            message: "What department does the role belong to?",
+            choices: []
+        }
+    );
+    db.query(`SELECT * FROM department`, (err, rows) => {
+        console.table(rows);
+        chooseAction();
+    });
 }
 function viewDeps() {
-    console.log("reached 6");
-    chooseAction();
+    db.query(`SELECT * FROM department`, (err, rows) => {
+        console.table(rows);
+        chooseAction();
+    });
 }
 function addDep() {
-    console.log("reached 7");
-    chooseAction();
+    inquirer.prompt({
+        type: "text",
+        name: "name",
+        message: "What is the name of the department?"
+    });
+    db.query(`SELECT * FROM department`, (err, rows) => {
+        console.table(rows);
+        chooseAction();
+    });
+}
+function quit() {
+    console.log("add quit function");
 }
 chooseAction();
