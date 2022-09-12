@@ -21,13 +21,13 @@ function chooseAction() {
         name: "action",
         message: "What would you like to do?",
         choices: [
+            "View All Departments",
+            "View All Roles",
             "View All Employees",
+            "Add Department",
+            "Add Role",
             "Add Employee",
             "Update Employee Role",
-            "View All Roles",
-            "Add Role",
-            "View All Departments",
-            "Add Department",
             "Quit"
         ]
     })
@@ -37,7 +37,7 @@ function chooseAction() {
             } else if (action === "Add Employee") {
                 addEmployee();
             } else if (action === "Update Employee Role") {
-                updateEmployee();
+                updateEmployeeRole();
             } else if (action === "View All Roles") {
                 viewAllRoles();
             } else if (action === "Add Role") {
@@ -56,9 +56,13 @@ function viewAllEmps() {
       `SELECT 
         employee.id, 
         employee.first_name, 
-        employee.last_name
-      FROM employee
-      LEFT JOIN roles ON employee.role_id = roles.id
+        employee.last_name,
+        role.title,
+        department.name AS department,
+        role.salary, 
+        employee.manager_id AS manager
+      FROM employee 
+      LEFT JOIN role ON role.title 
     `,
       (err, rows) => {
         console.table(rows);
@@ -67,18 +71,59 @@ function viewAllEmps() {
     );
 }
 function addEmployee() {
-
-    chooseAction();
+    
+    inquirer
+      .prompt(
+        {
+          type: "text",
+          name: "firstName",
+          message: "What is the employee's first name?",
+        },
+        {
+          type: "text",
+          name: "lastName",
+          message: "What is the employee's last name?",
+        },
+        {
+          type: "list",
+          name: "role",
+          message: "What is the employee's role?",
+          choices: [],
+        },
+        {
+          type: "list",
+          name: "manager",
+          message: "Who is the employee's manager?",
+          choices: [],
+        }
+      )
+        .then((answers) => {
+          
+      })
+      .then(chooseAction);
 }
-function updateEmployee(){
-
+function updateEmployeeRole(){
+    inquirer.prompt(
+        {
+            type: "list",
+            name: "employee",
+            message: "Which employee's role do you want to update?",
+            choices: []
+        },
+        {
+            type: "list",
+            name: "role",
+            message: "Which role do you want to assign the selected employee?",
+            choices: []
+        }
+    )
     chooseAction();
 }
 function viewAllRoles() {
     db.query(
-      `SELECT roles.id, roles.title, roles.salary, department.name AS department
-      FROM roles
-      LEFT JOIN department ON roles.department_id = department.id 
+      `SELECT role.id, role.title, role.salary, department.name AS department
+      FROM role
+      LEFT JOIN department ON role.department_id = department.id 
       
     `,
       (err, rows) => {
