@@ -137,6 +137,10 @@ function viewAllRoles() {
     );
 }
 function addRole() {
+  // let departmentChoices = [];
+  // db.query(`SELECT role.title FROM role`, function (err, results) {
+  //   departmentChoices = results.map({ title });
+  // });
     inquirer.prompt(
         {
             type: "text",
@@ -155,10 +159,11 @@ function addRole() {
             choices: []
         }
     );
-    db.query(`SELECT * FROM department`, (err, rows) => {
-        console.table(rows);
-        chooseAction();
-    });
+  console.log(results);
+    // db.query(`SELECT * FROM department`, (err, rows) => {
+    //     console.table(rows);
+    //     chooseAction();
+    // });
 }
 function viewDeps() {
     db.query(`SELECT * FROM department`, (err, rows) => {
@@ -167,17 +172,23 @@ function viewDeps() {
     });
 }
 function addDep() {
-    inquirer.prompt({
-        type: "text",
-        name: "name",
-        message: "What is the name of the department?"
-    });
-    db.query(`SELECT * FROM department`, (err, rows) => {
-        console.table(rows);
-        chooseAction();
+  inquirer.prompt({
+    type: "text",
+    name: "department",
+    message: "What is the name of the department?"
+  })
+    .then(department => {
+      db.query(`INSERT INTO department (name) VALUES(?)`, department.department, (err, rows) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          chooseAction();
+        }
+      );
     });
 }
 function quit() {
-    console.log("add quit function");
+    process.exit();
 }
 chooseAction();
