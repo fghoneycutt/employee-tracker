@@ -171,8 +171,7 @@ function updateEmployeeRole() {
            db.query(
              `SELECT CONCAT(first_name, " ", last_name) AS employee, employee.id FROM employee
               LEFT JOIN role ON employee.role_id = role.id`,
-             (err, rows) => {
-               console.log(rows);
+             (err, rows) => {               
                for (i = 0; i < rows.length; i++){
                  if (rows[i].employee === results.employee) {
                    id = rows[i].id
